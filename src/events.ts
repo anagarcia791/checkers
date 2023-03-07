@@ -1,9 +1,11 @@
-// SE PUEDE MODIFICAR
-
 import { Player, TileOwner } from "./types";
-import { setTile, setTurn, setWinner, resetBoard } from "./UI/state";
-
-let turn: Player = "blue";
+import {
+  setTile,
+  setTurn,
+  setWinner,
+  setPieceToMove,
+  resetBoard,
+} from "./UI/state";
 
 /**
  * Called when the user clicks on a tile
@@ -11,12 +13,22 @@ let turn: Player = "blue";
  * @param column of the clicked tile
  * @param owner of the clicked tile
  */
-export function onTileClick(row: number, column: number, owner: TileOwner) {
-  console.log(`row: ${row} column: ${column} owner: ${owner}`);
+export function onTileClick(
+  row: number,
+  column: number,
+  owner: TileOwner,
+  turn: Player,
+  pieceToMove: TileOwner
+) {
+  console.log(`CLICK INFO row: ${row} column: ${column} owner: ${owner}`);
+  setPieceToMove(owner);
   setTile(row, column, "none");
-  setWinner(undefined); //MODIFICAR depende de quien alcanza la mayoria de fichas en el otro lado del tablero
-  turn = turn === "blue" ? "red" : "blue";
-  setTurn(turn);
+
+  if (owner === "none") {
+    setTile(row, column, pieceToMove);
+    turn = turn === "blue" ? "red" : "blue";
+    setTurn(turn);
+  }
 }
 
 /**
@@ -24,6 +36,6 @@ export function onTileClick(row: number, column: number, owner: TileOwner) {
  */
 export function onRestart() {
   setWinner(undefined);
-  setTurn(undefined);
+  setTurn("blue");
   resetBoard();
 }

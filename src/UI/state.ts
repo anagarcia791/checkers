@@ -3,8 +3,9 @@ import { Player, TileOwner } from "../types";
 
 export type GameState = {
   board: TileOwner[][];
-  turn?: Player;
+  turn: Player;
   winner?: Player;
+  pieceToMove: TileOwner;
 };
 
 function initializeBoard() {
@@ -38,7 +39,9 @@ function initializeBoard() {
 export const initialize = (): GameState => {
   return {
     board: initializeBoard(),
-    turn: undefined,
+    turn: "blue",
+    winner: undefined,
+    pieceToMove: "none",
   };
 };
 
@@ -56,7 +59,6 @@ const Store = (() => {
     set: (fn: GameState | ((s: GameState) => GameState)) => {
       state = fn instanceof Function ? fn(state) : fn;
       subs.forEach(({ exec }) => exec(state));
-      console.log("ESTADO ACTUAL!!!!!!!!!!!!!!!!!!!!!! ", state);
     },
     get: () => state,
     subscribe: (fn: (s: GameState) => void) => {
@@ -87,11 +89,14 @@ export const setTile = (row: number, column: number, owner: TileOwner) =>
     };
   });
 
-export const setTurn = (player?: Player) =>
+export const setTurn = (player: Player) =>
   Store.set((s) => ({ ...s, turn: player }));
 
 export const setWinner = (player: Player | undefined) =>
   Store.set((s) => ({ ...s, winner: player }));
+
+export const setPieceToMove = (piece: TileOwner) =>
+  Store.set((s) => ({ ...s, pieceToMove: piece }));
 
 export const resetBoard = () => {
   Store.set((s) => {

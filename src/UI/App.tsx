@@ -3,8 +3,15 @@ import { useGlobalState } from "./state";
 import { onTileClick, onRestart } from "../events";
 
 export default function App() {
-  const { board, winner, turn } = useGlobalState();
-  
+  const { board, winner, turn, pieceToMove } = useGlobalState();
+  console.log(
+    "ESTADO ACTUAL!!!!!!!!!!!!!!!!!!!!!! ",
+    board,
+    turn,
+    winner,
+    pieceToMove
+  );
+
   function renderBoard() {
     const rows = Array(8).fill(0);
     const cols = Array(8).fill(0);
@@ -18,7 +25,9 @@ export default function App() {
                 const color = (ic + ir) % 2 === 1 ? "light" : "dark";
                 return (
                   <div
-                    onClick={() => onTileClick(ir, ic, board[ic][ir])}
+                    onClick={() =>
+                      onTileClick(ir, ic, board[ic][ir], turn, pieceToMove)
+                    }
                     key={`${ic} ${ir}`}
                     className={`tile ${color}`}
                     id={`${ic},${ir}`}
