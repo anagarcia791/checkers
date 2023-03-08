@@ -21,13 +21,16 @@ export function onTileClick(
   pieceToMove: TileOwner
 ) {
   console.log(`CLICK INFO row: ${row} column: ${column} owner: ${owner}`);
-  setPieceToMove(owner);
-  setTile(row, column, "none");
 
-  if (owner === "none") {
-    setTile(row, column, pieceToMove);
-    turn = turn === "blue" ? "red" : "blue";
-    setTurn(turn);
+  if (owner.includes(turn) || pieceToMove.includes(turn)) {
+    setPieceToMove(owner);
+    setTile(row, column, "none");
+    
+    if (owner === "none") {
+      setTile(row, column, pieceToMove);
+      turn = turn === "blue" ? "red" : "blue";
+      setTurn(turn);
+    }
   }
 }
 
