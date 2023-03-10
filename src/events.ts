@@ -4,8 +4,27 @@ import {
   setTurn,
   setWinner,
   setPieceToMove,
+  setStartingPoint,
   resetBoard,
 } from "./UI/state";
+
+let coordinates = [
+  [0, 0],
+  [0, 0],
+];
+
+const changeCoordinates = (
+  startingCol: number,
+  startingRow: number,
+  finalCol: number,
+  finalRow: number
+) => {
+  coordinates[0][0] = startingCol;
+  coordinates[0][1] = startingRow;
+
+  coordinates[1][0] = finalCol;
+  coordinates[1][1] = finalRow;
+};
 
 /**
  * Called when the user clicks on a tile
@@ -18,14 +37,24 @@ export function onTileClick(
   column: number,
   owner: TileOwner,
   turn: Player,
-  pieceToMove: TileOwner
+  pieceToMove: TileOwner,
+  startingCol: number,
+  startingRow: number
 ) {
-  console.log(`CLICK INFO row: ${row} column: ${column} owner: ${owner}`);
+  console.log(`CLICK INFO row: ${row} column: ${column} owner: ${owner} to move: ${pieceToMove}`);
+
+  if (owner !== "none" && pieceToMove !== "none") {
+    setTile(coordinates[1][1], coordinates[1][0], pieceToMove);
+    setPieceToMove("none");
+    return;
+  }
 
   if (owner.includes(turn) || pieceToMove.includes(turn)) {
+    changeCoordinates(startingCol, startingRow, column, row);
+    setStartingPoint(column, row);
     setPieceToMove(owner);
     setTile(row, column, "none");
-    
+
     if (owner === "none") {
       setTile(row, column, pieceToMove);
       turn = turn === "blue" ? "red" : "blue";

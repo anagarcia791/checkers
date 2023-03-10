@@ -6,6 +6,8 @@ export type GameState = {
   turn: Player;
   winner?: Player;
   pieceToMove: TileOwner;
+  startingCol: number;
+  startingRow: number;
 };
 
 function initializeBoard() {
@@ -19,6 +21,8 @@ function initializeBoard() {
       } else if (i > 40) {
         return "red pawn";
       }
+    }else{
+      return "invalid";
     }
     return "none";
   });
@@ -42,6 +46,8 @@ export const initialize = (): GameState => {
     turn: "blue",
     winner: undefined,
     pieceToMove: "none",
+    startingCol: 0,
+    startingRow: 0,
   };
 };
 
@@ -97,6 +103,9 @@ export const setWinner = (player: Player | undefined) =>
 
 export const setPieceToMove = (piece: TileOwner) =>
   Store.set((s) => ({ ...s, pieceToMove: piece }));
+
+export const setStartingPoint = (startCol: number, startRow: number) =>
+  Store.set((s) => ({ ...s, startingCol: startCol, startingRow: startRow }));
 
 export const resetBoard = () => {
   Store.set((s) => {

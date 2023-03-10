@@ -3,6 +3,7 @@ export type TileOwner =
   | "red pawn"
   | "blue queen"
   | "red queen"
-  | "none";
+  | "none"
+  | "invalid";
 
 export type Player = "blue" | "red";
