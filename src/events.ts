@@ -56,12 +56,42 @@ export function onTileClick(
     setTile(row, column, "none");
 
     if (owner === "none") {
-      setTile(row, column, pieceToMove);
-      turn = turn === "blue" ? "red" : "blue";
-      setTurn(turn);
+      if (checkMovement(pieceToMove) === "allowed") {
+        setTile(row, column, pieceToMove);
+        turn = turn === "blue" ? "red" : "blue";
+        setTurn(turn);
+      } else if (checkMovement(pieceToMove) === "not allowed") {
+        setTile(coordinates[0][1], coordinates[0][0], pieceToMove);
+        setPieceToMove("none");
+        return;
+      }
     }
   }
 }
+
+const checkMovement = (pieceToMove: TileOwner) => {
+  let colMovement =
+    coordinates[1][0] === coordinates[0][0] + 1 ||
+    coordinates[1][0] === coordinates[0][0] - 1;
+
+  let rowMoventForBlue = coordinates[1][1] === coordinates[0][1] + 1;
+
+  let rowMoventForRed = coordinates[1][1] === coordinates[0][1] - 1;
+
+  if (pieceToMove.includes("blue")) {
+    if (rowMoventForBlue && colMovement) {
+      return "allowed";
+    }
+    return "not allowed";
+  }
+
+  if (pieceToMove.includes("red")) {
+    if (rowMoventForRed && colMovement) {
+      return "allowed";
+    }
+    return "not allowed";
+  }
+};
 
 /**
  * Called when the user clicks on the "restart" button
