@@ -21,7 +21,7 @@ function initializeBoard() {
       } else if (i > 40) {
         return "red pawn";
       }
-    }else{
+    } else {
       return "invalid";
     }
     return "none";

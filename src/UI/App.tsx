@@ -3,9 +3,10 @@ import { useGlobalState } from "./state";
 import { onTileClick, onRestart } from "../events";
 
 export default function App() {
-  const { board, winner, turn, pieceToMove, startingCol, startingRow } = useGlobalState();
-  
-  console.log("ESTADO ACTUAL!!!!!!!!!!!!!!!!!!!!!! ",board,turn,winner,pieceToMove);
+  const { board, winner, turn, pieceToMove, startingCol, startingRow } =
+    useGlobalState();
+
+  //console.log("ESTADO ACTUAL!!!!!!!!!!!!!!!!!!!!!! ",board,turn,winner,pieceToMove);
 
   function renderBoard() {
     const rows = Array(8).fill(0);
@@ -22,6 +23,7 @@ export default function App() {
                   <div
                     onClick={() =>
                       onTileClick(
+                        board,
                         ir,
                         ic,
                         board[ic][ir],

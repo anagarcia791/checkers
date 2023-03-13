@@ -33,6 +33,7 @@ const changeCoordinates = (
  * @param owner of the clicked tile
  */
 export function onTileClick(
+  actualBoard: TileOwner[][],
   row: number,
   column: number,
   owner: TileOwner,
@@ -56,11 +57,39 @@ export function onTileClick(
     setTile(row, column, "none");
 
     if (owner === "none") {
-      if (checkMovement(pieceToMove) === "allowed") {
+      let simpleMovement = checkSimpleMovement(pieceToMove);
+      let rightKillingMovement = checkRightKillingMovement(actualBoard,pieceToMove);
+      let leftKillingMovement = checkLeftKillingMovement(actualBoard,pieceToMove);
+
+      if (simpleMovement === "allowed") {
         setTile(row, column, pieceToMove);
         turn = turn === "blue" ? "red" : "blue";
         setTurn(turn);
-      } else if (checkMovement(pieceToMove) === "not allowed") {
+      } else if (rightKillingMovement === "blue-right") {
+        setTile(row, column, pieceToMove);
+        setTile(coordinates[0][1] + 1, coordinates[0][0] + 1, "none");
+        //sumar puntaje
+        turn = turn === "blue" ? "red" : "blue";
+        setTurn(turn);
+      } else if (leftKillingMovement === "blue-left") {
+        setTile(row, column, pieceToMove);
+        setTile(coordinates[0][1] + 1, coordinates[0][0] - 1, "none");
+        //sumar puntaje
+        turn = turn === "blue" ? "red" : "blue";
+        setTurn(turn);
+      } else if (rightKillingMovement === "red-right") {
+        setTile(row, column, pieceToMove);
+        setTile(coordinates[0][1] - 1, coordinates[0][0] + 1, "none");
+        //sumar puntaje
+        turn = turn === "blue" ? "red" : "blue";
+        setTurn(turn);
+      } else if (leftKillingMovement === "red-left") {
+        setTile(row, column, pieceToMove);
+        setTile(coordinates[0][1] - 1, coordinates[0][0] - 1, "none");
+        //sumar puntaje
+        turn = turn === "blue" ? "red" : "blue";
+        setTurn(turn);
+      } else {
         setTile(coordinates[0][1], coordinates[0][0], pieceToMove);
         setPieceToMove("none");
         return;
@@ -69,13 +98,12 @@ export function onTileClick(
   }
 }
 
-const checkMovement = (pieceToMove: TileOwner) => {
+const checkSimpleMovement = (pieceToMove: TileOwner) => {
   let colMovement =
     coordinates[1][0] === coordinates[0][0] + 1 ||
     coordinates[1][0] === coordinates[0][0] - 1;
 
   let rowMoventForBlue = coordinates[1][1] === coordinates[0][1] + 1;
-
   let rowMoventForRed = coordinates[1][1] === coordinates[0][1] - 1;
 
   if (pieceToMove.includes("blue")) {
@@ -90,6 +118,52 @@ const checkMovement = (pieceToMove: TileOwner) => {
       return "allowed";
     }
     return "not allowed";
+  }
+};
+
+const checkRightKillingMovement = (
+  actualBoard: TileOwner[][],
+  pieceToMove: TileOwner
+) => {
+  let colMovement = coordinates[1][0] === coordinates[0][0] + 2;
+  let rowMoventForBlue = coordinates[1][1] === coordinates[0][1] + 2;
+  let rowMoventForRed = coordinates[1][1] === coordinates[0][1] - 2;
+
+  if (pieceToMove.includes("blue") && rowMoventForBlue && colMovement) {
+    if (actualBoard[coordinates[0][0] + 1][coordinates[0][1] + 1].includes("red")) {
+      return "blue-right";
+    }
+    return "not apply";
+  }
+
+  if (pieceToMove.includes("red") && rowMoventForRed && colMovement) {
+    if (actualBoard[coordinates[0][0] + 1][coordinates[0][1] - 1].includes("blue")) {
+      return "red-right";
+    }
+    return "not apply";
+  }
+};
+
+const checkLeftKillingMovement = (
+  actualBoard: TileOwner[][],
+  pieceToMove: TileOwner
+) => {
+  let colMovement = coordinates[1][0] === coordinates[0][0] - 2;
+  let rowMoventForBlue = coordinates[1][1] === coordinates[0][1] + 2;
+  let rowMoventForRed = coordinates[1][1] === coordinates[0][1] - 2;
+
+  if (pieceToMove.includes("blue") && rowMoventForBlue && colMovement) {
+    if (actualBoard[coordinates[0][0] - 1][coordinates[0][1] + 1].includes("red")) {
+      return "blue-left";
+    }
+    return "not apply";
+  }
+
+  if (pieceToMove.includes("red") && rowMoventForRed && colMovement) {
+    if (actualBoard[coordinates[0][0] - 1][coordinates[0][1] - 1].includes("blue")) {
+      return "red-left";
+    }
+    return "not apply";
   }
 };
 
