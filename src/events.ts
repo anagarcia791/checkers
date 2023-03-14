@@ -1,5 +1,10 @@
 import { Player, TileOwner } from "./types";
 import {
+  checkLeftKillingMovement,
+  checkRightKillingMovement,
+  checkSimpleMovement,
+} from "./controllers/logic";
+import {
   setTile,
   setTurn,
   setWinner,
@@ -7,6 +12,11 @@ import {
   setStartingPoint,
   resetBoard,
 } from "./UI/state";
+
+let scores = {
+  red: 0,
+  blue: 0,
+};
 
 let coordinates = [
   [0, 0],
@@ -57,9 +67,9 @@ export function onTileClick(
     setTile(row, column, "none");
 
     if (owner === "none") {
-      let simpleMovement = checkSimpleMovement(pieceToMove);
-      let rightKillingMovement = checkRightKillingMovement(actualBoard,pieceToMove);
-      let leftKillingMovement = checkLeftKillingMovement(actualBoard,pieceToMove);
+      let simpleMovement = checkSimpleMovement(pieceToMove, coordinates);
+      let rightKillingMovement = checkRightKillingMovement(actualBoard,pieceToMove,coordinates);
+      let leftKillingMovement = checkLeftKillingMovement(actualBoard,pieceToMove,coordinates);
 
       if (simpleMovement === "allowed") {
         setTile(row, column, pieceToMove);
@@ -68,25 +78,25 @@ export function onTileClick(
       } else if (rightKillingMovement === "blue-right") {
         setTile(row, column, pieceToMove);
         setTile(coordinates[0][1] + 1, coordinates[0][0] + 1, "none");
-        //sumar puntaje
+        scores.blue += 1;
         turn = turn === "blue" ? "red" : "blue";
         setTurn(turn);
       } else if (leftKillingMovement === "blue-left") {
         setTile(row, column, pieceToMove);
         setTile(coordinates[0][1] + 1, coordinates[0][0] - 1, "none");
-        //sumar puntaje
+        scores.blue += 1;
         turn = turn === "blue" ? "red" : "blue";
         setTurn(turn);
       } else if (rightKillingMovement === "red-right") {
         setTile(row, column, pieceToMove);
         setTile(coordinates[0][1] - 1, coordinates[0][0] + 1, "none");
-        //sumar puntaje
+        scores.red += 1;
         turn = turn === "blue" ? "red" : "blue";
         setTurn(turn);
       } else if (leftKillingMovement === "red-left") {
         setTile(row, column, pieceToMove);
         setTile(coordinates[0][1] - 1, coordinates[0][0] - 1, "none");
-        //sumar puntaje
+        scores.red += 1;
         turn = turn === "blue" ? "red" : "blue";
         setTurn(turn);
       } else {
@@ -96,76 +106,20 @@ export function onTileClick(
       }
     }
   }
+
+  checkWinner();
+
 }
 
-const checkSimpleMovement = (pieceToMove: TileOwner) => {
-  let colMovement =
-    coordinates[1][0] === coordinates[0][0] + 1 ||
-    coordinates[1][0] === coordinates[0][0] - 1;
-
-  let rowMoventForBlue = coordinates[1][1] === coordinates[0][1] + 1;
-  let rowMoventForRed = coordinates[1][1] === coordinates[0][1] - 1;
-
-  if (pieceToMove.includes("blue")) {
-    if (rowMoventForBlue && colMovement) {
-      return "allowed";
-    }
-    return "not allowed";
+const checkWinner = ()=>{
+  if (scores.blue > scores.red) {
+    console.log("GANA AZULLLLLL");
+  } else if (scores.red > scores.blue) {
+    console.log("GANA ROJOOOOOOO");
+  } else {
+    console.log("EMPATEEEEE");
   }
-
-  if (pieceToMove.includes("red")) {
-    if (rowMoventForRed && colMovement) {
-      return "allowed";
-    }
-    return "not allowed";
-  }
-};
-
-const checkRightKillingMovement = (
-  actualBoard: TileOwner[][],
-  pieceToMove: TileOwner
-) => {
-  let colMovement = coordinates[1][0] === coordinates[0][0] + 2;
-  let rowMoventForBlue = coordinates[1][1] === coordinates[0][1] + 2;
-  let rowMoventForRed = coordinates[1][1] === coordinates[0][1] - 2;
-
-  if (pieceToMove.includes("blue") && rowMoventForBlue && colMovement) {
-    if (actualBoard[coordinates[0][0] + 1][coordinates[0][1] + 1].includes("red")) {
-      return "blue-right";
-    }
-    return "not apply";
-  }
-
-  if (pieceToMove.includes("red") && rowMoventForRed && colMovement) {
-    if (actualBoard[coordinates[0][0] + 1][coordinates[0][1] - 1].includes("blue")) {
-      return "red-right";
-    }
-    return "not apply";
-  }
-};
-
-const checkLeftKillingMovement = (
-  actualBoard: TileOwner[][],
-  pieceToMove: TileOwner
-) => {
-  let colMovement = coordinates[1][0] === coordinates[0][0] - 2;
-  let rowMoventForBlue = coordinates[1][1] === coordinates[0][1] + 2;
-  let rowMoventForRed = coordinates[1][1] === coordinates[0][1] - 2;
-
-  if (pieceToMove.includes("blue") && rowMoventForBlue && colMovement) {
-    if (actualBoard[coordinates[0][0] - 1][coordinates[0][1] + 1].includes("red")) {
-      return "blue-left";
-    }
-    return "not apply";
-  }
-
-  if (pieceToMove.includes("red") && rowMoventForRed && colMovement) {
-    if (actualBoard[coordinates[0][0] - 1][coordinates[0][1] - 1].includes("blue")) {
-      return "red-left";
-    }
-    return "not apply";
-  }
-};
+}
 
 /**
  * Called when the user clicks on the "restart" button
@@ -174,4 +128,6 @@ export function onRestart() {
   setWinner(undefined);
   setTurn("blue");
   resetBoard();
+  scores.blue = 0;
+  scores.red = 0;
 }

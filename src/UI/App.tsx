@@ -6,8 +6,6 @@ export default function App() {
   const { board, winner, turn, pieceToMove, startingCol, startingRow } =
     useGlobalState();
 
-  //console.log("ESTADO ACTUAL!!!!!!!!!!!!!!!!!!!!!! ",board,turn,winner,pieceToMove);
-
   function renderBoard() {
     const rows = Array(8).fill(0);
     const cols = Array(8).fill(0);
