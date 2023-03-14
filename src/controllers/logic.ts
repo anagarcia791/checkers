@@ -1,9 +1,29 @@
 import { TileOwner } from "../types";
 
-export const checkSimpleMovement = (
-  pieceToMove: TileOwner,
-  coordinates: number[][]
+export let scores = {
+  red: 0,
+  blue: 0,
+};
+
+export let coordinates = [
+  [0, 0],
+  [0, 0],
+];
+
+export const changeCoordinates = (
+  startingCol: number,
+  startingRow: number,
+  finalCol: number,
+  finalRow: number
 ) => {
+  coordinates[0][0] = startingCol;
+  coordinates[0][1] = startingRow;
+
+  coordinates[1][0] = finalCol;
+  coordinates[1][1] = finalRow;
+};
+
+export const checkSimpleMovement = (pieceToMove: TileOwner) => {
   let colMovement =
     coordinates[1][0] === coordinates[0][0] + 1 ||
     coordinates[1][0] === coordinates[0][0] - 1;
@@ -24,8 +44,7 @@ export const checkSimpleMovement = (
 
 export const checkRightKillingMovement = (
   actualBoard: TileOwner[][],
-  pieceToMove: TileOwner,
-  coordinates: number[][]
+  pieceToMove: TileOwner
 ) => {
   let colMovement = coordinates[1][0] === coordinates[0][0] + 2;
   let rowMoventForBlue = coordinates[1][1] === coordinates[0][1] + 2;
@@ -48,8 +67,7 @@ export const checkRightKillingMovement = (
 
 export const checkLeftKillingMovement = (
   actualBoard: TileOwner[][],
-  pieceToMove: TileOwner,
-  coordinates: number[][]
+  pieceToMove: TileOwner
 ) => {
   let colMovement = coordinates[1][0] === coordinates[0][0] - 2;
   let rowMoventForBlue = coordinates[1][1] === coordinates[0][1] + 2;

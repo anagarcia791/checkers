@@ -1,8 +1,11 @@
 import { Player, TileOwner } from "./types";
 import {
+  scores,
+  coordinates,
+  changeCoordinates,
+  checkSimpleMovement,
   checkLeftKillingMovement,
   checkRightKillingMovement,
-  checkSimpleMovement,
 } from "./controllers/logic";
 import {
   setTile,
@@ -12,29 +15,6 @@ import {
   setStartingPoint,
   resetBoard,
 } from "./UI/state";
-
-let scores = {
-  red: 0,
-  blue: 0,
-};
-
-let coordinates = [
-  [0, 0],
-  [0, 0],
-];
-
-const changeCoordinates = (
-  startingCol: number,
-  startingRow: number,
-  finalCol: number,
-  finalRow: number
-) => {
-  coordinates[0][0] = startingCol;
-  coordinates[0][1] = startingRow;
-
-  coordinates[1][0] = finalCol;
-  coordinates[1][1] = finalRow;
-};
 
 /**
  * Called when the user clicks on a tile
@@ -67,51 +47,72 @@ export function onTileClick(
     setTile(row, column, "none");
 
     if (owner === "none") {
-      let simpleMovement = checkSimpleMovement(pieceToMove, coordinates);
-      let rightKillingMovement = checkRightKillingMovement(actualBoard,pieceToMove,coordinates);
-      let leftKillingMovement = checkLeftKillingMovement(actualBoard,pieceToMove,coordinates);
-
-      if (simpleMovement === "allowed") {
-        setTile(row, column, pieceToMove);
-        turn = turn === "blue" ? "red" : "blue";
-        setTurn(turn);
-      } else if (rightKillingMovement === "blue-right") {
-        setTile(row, column, pieceToMove);
-        setTile(coordinates[0][1] + 1, coordinates[0][0] + 1, "none");
-        scores.blue += 1;
-        turn = turn === "blue" ? "red" : "blue";
-        setTurn(turn);
-      } else if (leftKillingMovement === "blue-left") {
-        setTile(row, column, pieceToMove);
-        setTile(coordinates[0][1] + 1, coordinates[0][0] - 1, "none");
-        scores.blue += 1;
-        turn = turn === "blue" ? "red" : "blue";
-        setTurn(turn);
-      } else if (rightKillingMovement === "red-right") {
-        setTile(row, column, pieceToMove);
-        setTile(coordinates[0][1] - 1, coordinates[0][0] + 1, "none");
-        scores.red += 1;
-        turn = turn === "blue" ? "red" : "blue";
-        setTurn(turn);
-      } else if (leftKillingMovement === "red-left") {
-        setTile(row, column, pieceToMove);
-        setTile(coordinates[0][1] - 1, coordinates[0][0] - 1, "none");
-        scores.red += 1;
-        turn = turn === "blue" ? "red" : "blue";
-        setTurn(turn);
-      } else {
-        setTile(coordinates[0][1], coordinates[0][0], pieceToMove);
-        setPieceToMove("none");
-        return;
-      }
+      checkMovement(pieceToMove, actualBoard, row, column, turn);
     }
   }
 
   checkWinner();
-
 }
 
-const checkWinner = ()=>{
+const checkMovement = (
+  pieceToMove: TileOwner,
+  actualBoard: TileOwner[][],
+  row: number,
+  column: number,
+  turn: Player
+) => {
+  let simpleMovement = checkSimpleMovement(pieceToMove);
+  let rightKillingMovement = checkRightKillingMovement(actualBoard,pieceToMove);
+  let leftKillingMovement = checkLeftKillingMovement(actualBoard, pieceToMove);
+
+  if (simpleMovement === "allowed") {
+    setTile(row, column, pieceToMove);
+    turn = turn === "blue" ? "red" : "blue";
+    setTurn(turn);
+  } else if (rightKillingMovement === "blue-right") {
+    blueKillingMovement(row, column, pieceToMove, turn, +1);
+  } else if (leftKillingMovement === "blue-left") {
+    blueKillingMovement(row, column, pieceToMove, turn, -1);
+  } else if (rightKillingMovement === "red-right") {
+    redKillingMovement(row, column, pieceToMove, turn, +1);
+  } else if (leftKillingMovement === "red-left") {
+    redKillingMovement(row, column, pieceToMove, turn, -1);
+  } else {
+    setTile(coordinates[0][1], coordinates[0][0], pieceToMove);
+    setPieceToMove("none");
+    return;
+  }
+};
+
+const blueKillingMovement = (
+  row: number,
+  column: number,
+  pieceToMove: TileOwner,
+  turn: Player,
+  columDirection: number
+) => {
+  setTile(row, column, pieceToMove);
+  setTile(coordinates[0][1] + 1, coordinates[0][0] + columDirection, "none");
+  scores.blue += 1;
+  turn = turn === "blue" ? "red" : "blue";
+  setTurn(turn);
+};
+
+const redKillingMovement = (
+  row: number,
+  column: number,
+  pieceToMove: TileOwner,
+  turn: Player,
+  columDirection: number
+) => {
+  setTile(row, column, pieceToMove);
+  setTile(coordinates[0][1] - 1, coordinates[0][0] + columDirection, "none");
+  scores.red += 1;
+  turn = turn === "blue" ? "red" : "blue";
+  setTurn(turn);
+};
+
+const checkWinner = () => {
   if (scores.blue > scores.red) {
     console.log("GANA AZULLLLLL");
   } else if (scores.red > scores.blue) {
@@ -119,7 +120,7 @@ const checkWinner = ()=>{
   } else {
     console.log("EMPATEEEEE");
   }
-}
+};
 
 /**
  * Called when the user clicks on the "restart" button
