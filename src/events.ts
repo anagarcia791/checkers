@@ -32,9 +32,7 @@ export function onTileClick(
   startingCol: number,
   startingRow: number
 ) {
-  console.log(
-    `CLICK INFO row: ${row} column: ${column} owner: ${owner} to move: ${pieceToMove}`
-  );
+  console.log(`CLICK INFO row: ${row} column: ${column} owner: ${owner} to move: ${pieceToMove}`);
 
   if (owner !== "none" && pieceToMove !== "none") {
     setTile(coordinates[1][1], coordinates[1][0], pieceToMove);
@@ -80,14 +78,23 @@ const checkMovement = (
   } else if (leftKillingMovement === "blue-left") {
     killingMovement(row, column, pieceToMove, turn, +1, -1);
     scores.blue += 1;
-  } else if (rightKillingMovement === "blue-right-back") {
+  } else if (rightKillingMovement === "blue-queen-right-back") {
     killingMovement(row, column, pieceToMove, turn, -1, +1);
+    scores.blue += 1;
+  } else if (leftKillingMovement === "blue-queen-left-back") {
+    killingMovement(row, column, pieceToMove, turn, -1, -1);
     scores.blue += 1;
   } else if (rightKillingMovement === "red-right") {
     killingMovement(row, column, pieceToMove, turn, -1, +1);
     scores.red += 1;
   } else if (leftKillingMovement === "red-left") {
     killingMovement(row, column, pieceToMove, turn, -1, -1);
+    scores.red += 1;
+  } else if (rightKillingMovement === "red-queen-right-forward") {
+    killingMovement(row, column, pieceToMove, turn, +1, +1);
+    scores.red += 1;
+  } else if (leftKillingMovement === "red-queen-left-forward") {
+    killingMovement(row, column, pieceToMove, turn, +1, -1);
     scores.red += 1;
   } else {
     setTile(coordinates[0][1], coordinates[0][0], pieceToMove);

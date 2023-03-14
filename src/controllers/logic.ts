@@ -76,7 +76,19 @@ export const checkRightKillingMovement = (
     }
 
     if (rowMovementBackwards && actualBoard[coordinates[0][0] + 1][coordinates[0][1] - 1].includes("red")) {
-      return "blue-right-back";
+      return "blue-queen-right-back";
+    }
+
+    return "not apply";
+  }
+
+  if (pieceToMove.includes("red queen") && colMovement) {
+    if (rowMovementForward && actualBoard[coordinates[0][0] + 1][coordinates[0][1] + 1].includes("blue")) {
+      return "red-queen-right-forward";
+    }
+
+    if (rowMovementBackwards && actualBoard[coordinates[0][0] + 1][coordinates[0][1] - 1].includes("blue")) {
+      return "red-right";
     }
 
     return "not apply";
@@ -102,6 +114,30 @@ export const checkLeftKillingMovement = (
     if (actualBoard[coordinates[0][0] - 1][coordinates[0][1] - 1].includes("blue")) {
       return "red-left";
     }
+    return "not apply";
+  }
+
+  if (pieceToMove.includes("blue queen") && colMovement) {
+    if (rowMovementForward && actualBoard[coordinates[0][0] - 1][coordinates[0][1] + 1].includes("red")) {
+      return "blue-left";
+    }
+
+    if (rowMovementBackwards && actualBoard[coordinates[0][0] - 1][coordinates[0][1] - 1].includes("red")) {
+      return "blue-queen-left-back";
+    }
+
+    return "not apply";
+  }
+
+  if (pieceToMove.includes("red queen") && colMovement) {
+    if (rowMovementForward && actualBoard[coordinates[0][0] - 1][coordinates[0][1] + 1].includes("blue")) {
+      return "red-queen-left-forward";
+    }
+
+    if (rowMovementBackwards && actualBoard[coordinates[0][0] - 1][coordinates[0][1] - 1].includes("blue")) {
+      return "red-left";
+    }
+
     return "not apply";
   }
 };
