@@ -53,7 +53,7 @@ export function onTileClick(
     }
   }
 
-  checkWinner();
+  //checkWinner();
 }
 
 const checkMovement = (
@@ -64,7 +64,10 @@ const checkMovement = (
   turn: Player
 ) => {
   let simpleMovement = checkSimpleMovement(pieceToMove);
-  let rightKillingMovement = checkRightKillingMovement(actualBoard,pieceToMove);
+  let rightKillingMovement = checkRightKillingMovement(
+    actualBoard,
+    pieceToMove
+  );
   let leftKillingMovement = checkLeftKillingMovement(actualBoard, pieceToMove);
 
   if (simpleMovement === "allowed") {
@@ -76,6 +79,9 @@ const checkMovement = (
     scores.blue += 1;
   } else if (leftKillingMovement === "blue-left") {
     killingMovement(row, column, pieceToMove, turn, +1, -1);
+    scores.blue += 1;
+  } else if (rightKillingMovement === "blue-right-back") {
+    killingMovement(row, column, pieceToMove, turn, -1, +1);
     scores.blue += 1;
   } else if (rightKillingMovement === "red-right") {
     killingMovement(row, column, pieceToMove, turn, -1, +1);
