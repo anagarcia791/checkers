@@ -32,7 +32,9 @@ export function onTileClick(
   startingCol: number,
   startingRow: number
 ) {
-  console.log(`CLICK INFO row: ${row} column: ${column} owner: ${owner} to move: ${pieceToMove}`);
+  console.log(
+    `CLICK INFO row: ${row} column: ${column} owner: ${owner} to move: ${pieceToMove}`
+  );
 
   if (owner !== "none" && pieceToMove !== "none") {
     setTile(coordinates[1][1], coordinates[1][0], pieceToMove);
@@ -70,13 +72,17 @@ const checkMovement = (
     turn = turn === "blue" ? "red" : "blue";
     setTurn(turn);
   } else if (rightKillingMovement === "blue-right") {
-    blueKillingMovement(row, column, pieceToMove, turn, +1);
+    killingMovement(row, column, pieceToMove, turn, +1, +1);
+    scores.blue += 1;
   } else if (leftKillingMovement === "blue-left") {
-    blueKillingMovement(row, column, pieceToMove, turn, -1);
+    killingMovement(row, column, pieceToMove, turn, +1, -1);
+    scores.blue += 1;
   } else if (rightKillingMovement === "red-right") {
-    redKillingMovement(row, column, pieceToMove, turn, +1);
+    killingMovement(row, column, pieceToMove, turn, -1, +1);
+    scores.red += 1;
   } else if (leftKillingMovement === "red-left") {
-    redKillingMovement(row, column, pieceToMove, turn, -1);
+    killingMovement(row, column, pieceToMove, turn, -1, -1);
+    scores.red += 1;
   } else {
     setTile(coordinates[0][1], coordinates[0][0], pieceToMove);
     setPieceToMove("none");
@@ -84,30 +90,20 @@ const checkMovement = (
   }
 };
 
-const blueKillingMovement = (
+const killingMovement = (
   row: number,
   column: number,
   pieceToMove: TileOwner,
   turn: Player,
+  rowDirection: number,
   columDirection: number
 ) => {
   setTile(row, column, pieceToMove);
-  setTile(coordinates[0][1] + 1, coordinates[0][0] + columDirection, "none");
-  scores.blue += 1;
-  turn = turn === "blue" ? "red" : "blue";
-  setTurn(turn);
-};
-
-const redKillingMovement = (
-  row: number,
-  column: number,
-  pieceToMove: TileOwner,
-  turn: Player,
-  columDirection: number
-) => {
-  setTile(row, column, pieceToMove);
-  setTile(coordinates[0][1] - 1, coordinates[0][0] + columDirection, "none");
-  scores.red += 1;
+  setTile(
+    coordinates[0][1] + rowDirection,
+    coordinates[0][0] + columDirection,
+    "none"
+  );
   turn = turn === "blue" ? "red" : "blue";
   setTurn(turn);
 };
