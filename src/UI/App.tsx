@@ -19,18 +19,20 @@ export default function App() {
                 const color = (ic + ir) % 2 === 1 ? "light" : "dark";
                 return (
                   <div
-                    onClick={() =>
-                      onTileClick(
-                        board,
-                        ir,
-                        ic,
-                        board[ic][ir],
-                        turn,
-                        pieceToMove,
-                        startingCol,
-                        startingRow
-                      )
-                    }
+                    onClick={() => {
+                      if (winner === undefined) {
+                        onTileClick(
+                          board,
+                          ir,
+                          ic,
+                          board[ic][ir],
+                          turn,
+                          pieceToMove,
+                          startingCol,
+                          startingRow
+                        );
+                      }
+                    }}
                     key={`${ic} ${ir}`}
                     className={`tile ${color}`}
                     id={`${ic},${ir}`}

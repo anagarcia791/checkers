@@ -43,7 +43,7 @@ export function onTileClick(
     }
   }
 
-  checkWinner();
+  checkWinner(actualBoard);
 }
 
 const checkMovement = (
@@ -145,19 +145,19 @@ const actionIfQueenIsKilled = (
   }
 };
 
-const checkWinner = () => {
-  if (scores.blue > scores.red) {
-    console.log("GANA AZULLLLLL");
-  } else if (scores.red > scores.blue) {
-    console.log("GANA ROJOOOOOOO");
-  } else {
-    console.log("EMPATEEEEE");
+const checkWinner = (actualBoard: TileOwner[][]) => {
+  for (let ic = 0; ic < 8; ic++) {
+    for (let ir = 0; ir < 8; ir++) {
+      if (actualBoard[ic][0] === "red queen" && scores.red > scores.blue) {
+        setWinner("red");
+      }
+      if (actualBoard[ic][7] === "blue queen" && scores.blue > scores.red) {
+        setWinner("blue");
+      }
+    }
   }
 };
 
-/**
- * Called when the user clicks on the "restart" button
- */
 export function onRestart() {
   setWinner(undefined);
   setTurn("blue");
