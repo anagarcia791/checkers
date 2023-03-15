@@ -23,13 +23,21 @@ export const changeCoordinates = (
   coordinates[1][1] = finalRow;
 };
 
+const isMovementForward = (positions: number) => {
+  return coordinates[1][1] === coordinates[0][1] + positions;
+};
+
+const isMovementBackwards = (positions: number) => {
+  return coordinates[1][1] === coordinates[0][1] - positions;
+};
+
 export const checkSimpleMovement = (pieceToMove: TileOwner) => {
   let colMovement =
     coordinates[1][0] === coordinates[0][0] + 1 ||
     coordinates[1][0] === coordinates[0][0] - 1;
 
-  let rowMovementForward = coordinates[1][1] === coordinates[0][1] + 1;
-  let rowMovementBackwards = coordinates[1][1] === coordinates[0][1] - 1;
+  let rowMovementForward = isMovementForward(1);
+  let rowMovementBackwards = isMovementBackwards(1);
 
   if (pieceToMove.includes("blue pawn") && rowMovementForward && colMovement) {
     return "allowed";
@@ -48,34 +56,43 @@ export const checkSimpleMovement = (pieceToMove: TileOwner) => {
   return "not allowed";
 };
 
+const isColorInPosition = (
+  actualBoard: TileOwner[][],
+  columDirection: number,
+  rowDirection: number,
+  colorToCheck: string
+) => {
+  return actualBoard[coordinates[0][0] + columDirection][coordinates[0][1] + rowDirection].includes(`${colorToCheck}`);
+};
+
 export const checkRightKillingMovement = (
   actualBoard: TileOwner[][],
   pieceToMove: TileOwner
 ) => {
   let colMovement = coordinates[1][0] === coordinates[0][0] + 2;
-  let rowMovementForward = coordinates[1][1] === coordinates[0][1] + 2;
-  let rowMovementBackwards = coordinates[1][1] === coordinates[0][1] - 2;
+  let rowMovementForward = isMovementForward(2);
+  let rowMovementBackwards = isMovementBackwards(2);
 
-  if (pieceToMove.includes("blue pawn") && rowMovementForward && colMovement) {
-    if (actualBoard[coordinates[0][0] + 1][coordinates[0][1] + 1].includes("red")) {
+  if (pieceToMove.includes("blue pawn") && colMovement) {
+    if (rowMovementForward && isColorInPosition(actualBoard, 1, 1, "red")) {
       return "blue-right";
     }
     return "not apply";
   }
 
-  if (pieceToMove.includes("red pawn") && rowMovementBackwards && colMovement) {
-    if (actualBoard[coordinates[0][0] + 1][coordinates[0][1] - 1].includes("blue")) {
+  if (pieceToMove.includes("red pawn") && colMovement) {
+    if (rowMovementBackwards && isColorInPosition(actualBoard, 1, -1, "blue")) {
       return "red-right";
     }
     return "not apply";
   }
 
   if (pieceToMove.includes("blue queen") && colMovement) {
-    if (rowMovementForward && actualBoard[coordinates[0][0] + 1][coordinates[0][1] + 1].includes("red")) {
+    if (rowMovementForward && isColorInPosition(actualBoard, 1, 1, "red")) {
       return "blue-right";
     }
 
-    if (rowMovementBackwards && actualBoard[coordinates[0][0] + 1][coordinates[0][1] - 1].includes("red")) {
+    if (rowMovementBackwards && isColorInPosition(actualBoard, 1, -1, "red")) {
       return "blue-queen-right-back";
     }
 
@@ -83,11 +100,11 @@ export const checkRightKillingMovement = (
   }
 
   if (pieceToMove.includes("red queen") && colMovement) {
-    if (rowMovementForward && actualBoard[coordinates[0][0] + 1][coordinates[0][1] + 1].includes("blue")) {
+    if (rowMovementForward && isColorInPosition(actualBoard, 1, 1, "blue")) {
       return "red-queen-right-forward";
     }
 
-    if (rowMovementBackwards && actualBoard[coordinates[0][0] + 1][coordinates[0][1] - 1].includes("blue")) {
+    if (rowMovementBackwards && isColorInPosition(actualBoard, 1, -1, "blue")) {
       return "red-right";
     }
 
@@ -100,29 +117,29 @@ export const checkLeftKillingMovement = (
   pieceToMove: TileOwner
 ) => {
   let colMovement = coordinates[1][0] === coordinates[0][0] - 2;
-  let rowMovementForward = coordinates[1][1] === coordinates[0][1] + 2;
-  let rowMovementBackwards = coordinates[1][1] === coordinates[0][1] - 2;
+  let rowMovementForward = isMovementForward(2);
+  let rowMovementBackwards = isMovementBackwards(2);
 
-  if (pieceToMove.includes("blue pawn") && rowMovementForward && colMovement) {
-    if (actualBoard[coordinates[0][0] - 1][coordinates[0][1] + 1].includes("red")) {
+  if (pieceToMove.includes("blue pawn") && colMovement) {
+    if (rowMovementForward && isColorInPosition(actualBoard, -1, 1, "red")) {
       return "blue-left";
     }
     return "not apply";
   }
 
-  if (pieceToMove.includes("red pawn") && rowMovementBackwards && colMovement) {
-    if (actualBoard[coordinates[0][0] - 1][coordinates[0][1] - 1].includes("blue")) {
+  if (pieceToMove.includes("red pawn") && colMovement) {
+    if (rowMovementBackwards && isColorInPosition(actualBoard, -1, -1, "blue")) {
       return "red-left";
     }
     return "not apply";
   }
 
   if (pieceToMove.includes("blue queen") && colMovement) {
-    if (rowMovementForward && actualBoard[coordinates[0][0] - 1][coordinates[0][1] + 1].includes("red")) {
+    if (rowMovementForward && isColorInPosition(actualBoard, -1, 1, "red")) {
       return "blue-left";
     }
 
-    if (rowMovementBackwards && actualBoard[coordinates[0][0] - 1][coordinates[0][1] - 1].includes("red")) {
+    if (rowMovementBackwards && isColorInPosition(actualBoard, -1, -1, "red")) {
       return "blue-queen-left-back";
     }
 
@@ -130,11 +147,11 @@ export const checkLeftKillingMovement = (
   }
 
   if (pieceToMove.includes("red queen") && colMovement) {
-    if (rowMovementForward && actualBoard[coordinates[0][0] - 1][coordinates[0][1] + 1].includes("blue")) {
+    if (rowMovementForward && isColorInPosition(actualBoard, -1, 1, "blue")) {
       return "red-queen-left-forward";
     }
 
-    if (rowMovementBackwards && actualBoard[coordinates[0][0] - 1][coordinates[0][1] - 1].includes("blue")) {
+    if (rowMovementBackwards && isColorInPosition(actualBoard, -1, -1, "blue")) {
       return "red-left";
     }
 

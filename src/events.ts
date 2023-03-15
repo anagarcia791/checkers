@@ -16,12 +16,6 @@ import {
   resetBoard,
 } from "./UI/state";
 
-/**
- * Called when the user clicks on a tile
- * @param row of the clicked tile
- * @param column of the clicked tile
- * @param owner of the clicked tile
- */
 export function onTileClick(
   actualBoard: TileOwner[][],
   row: number,
@@ -32,8 +26,6 @@ export function onTileClick(
   startingCol: number,
   startingRow: number
 ) {
-  console.log(`CLICK INFO row: ${row} column: ${column} owner: ${owner} to move: ${pieceToMove}`);
-
   if (owner !== "none" && pieceToMove !== "none") {
     setTile(coordinates[1][1], coordinates[1][0], pieceToMove);
     setPieceToMove("none");
@@ -51,7 +43,7 @@ export function onTileClick(
     }
   }
 
-  //checkWinner();
+  checkWinner();
 }
 
 const checkMovement = (
@@ -62,10 +54,7 @@ const checkMovement = (
   turn: Player
 ) => {
   let simpleMovement = checkSimpleMovement(pieceToMove);
-  let rightKillingMovement = checkRightKillingMovement(
-    actualBoard,
-    pieceToMove
-  );
+  let rightKillingMovement = checkRightKillingMovement(actualBoard, pieceToMove);
   let leftKillingMovement = checkLeftKillingMovement(actualBoard, pieceToMove);
 
   if (simpleMovement === "allowed") {
@@ -73,28 +62,28 @@ const checkMovement = (
     turn = turn === "blue" ? "red" : "blue";
     setTurn(turn);
   } else if (rightKillingMovement === "blue-right") {
-    killingMovement(row, column, pieceToMove, turn, +1, +1);
+    killingMovement(actualBoard, row, column, pieceToMove, turn, +1, +1);
     scores.blue += 1;
   } else if (leftKillingMovement === "blue-left") {
-    killingMovement(row, column, pieceToMove, turn, +1, -1);
+    killingMovement(actualBoard, row, column, pieceToMove, turn, +1, -1);
     scores.blue += 1;
   } else if (rightKillingMovement === "blue-queen-right-back") {
-    killingMovement(row, column, pieceToMove, turn, -1, +1);
+    killingMovement(actualBoard, row, column, pieceToMove, turn, -1, +1);
     scores.blue += 1;
   } else if (leftKillingMovement === "blue-queen-left-back") {
-    killingMovement(row, column, pieceToMove, turn, -1, -1);
+    killingMovement(actualBoard, row, column, pieceToMove, turn, -1, -1);
     scores.blue += 1;
   } else if (rightKillingMovement === "red-right") {
-    killingMovement(row, column, pieceToMove, turn, -1, +1);
+    killingMovement(actualBoard, row, column, pieceToMove, turn, -1, +1);
     scores.red += 1;
   } else if (leftKillingMovement === "red-left") {
-    killingMovement(row, column, pieceToMove, turn, -1, -1);
+    killingMovement(actualBoard, row, column, pieceToMove, turn, -1, -1);
     scores.red += 1;
   } else if (rightKillingMovement === "red-queen-right-forward") {
-    killingMovement(row, column, pieceToMove, turn, +1, +1);
+    killingMovement(actualBoard, row, column, pieceToMove, turn, +1, +1);
     scores.red += 1;
   } else if (leftKillingMovement === "red-queen-left-forward") {
-    killingMovement(row, column, pieceToMove, turn, +1, -1);
+    killingMovement(actualBoard, row, column, pieceToMove, turn, +1, -1);
     scores.red += 1;
   } else {
     setTile(coordinates[0][1], coordinates[0][0], pieceToMove);
@@ -104,6 +93,7 @@ const checkMovement = (
 };
 
 const killingMovement = (
+  actualBoard: TileOwner[][],
   row: number,
   column: number,
   pieceToMove: TileOwner,
@@ -112,13 +102,47 @@ const killingMovement = (
   columDirection: number
 ) => {
   setTile(row, column, pieceToMove);
-  setTile(
-    coordinates[0][1] + rowDirection,
-    coordinates[0][0] + columDirection,
-    "none"
-  );
+
+  let pieceToKill =
+    actualBoard[coordinates[0][0] + columDirection][coordinates[0][1] + rowDirection];
+
+  actionIfQueenIsKilled(actualBoard, pieceToKill);
+
+  setTile(coordinates[0][1] + rowDirection, coordinates[0][0] + columDirection, "none");
+
   turn = turn === "blue" ? "red" : "blue";
   setTurn(turn);
+};
+
+const actionIfQueenIsKilled = (
+  actualBoard: TileOwner[][],
+  pieceToKill: string
+) => {
+  if (pieceToKill.includes("blue queen")) {
+    let queen = 0;
+
+    for (let ic = 0; ic < 8; ic++) {
+      for (let ir = 0; ir < 8; ir++) {
+        if (queen < 1 && actualBoard[ic][ir] === "blue pawn") {
+          setTile(ir, ic, "blue queen");
+          queen++;
+        }
+      }
+    }
+  }
+
+  if (pieceToKill.includes("red queen")) {
+    let queen = 0;
+
+    for (let ic = 0; ic < 8; ic++) {
+      for (let ir = 0; ir < 8; ir++) {
+        if (queen < 1 && actualBoard[ic][ir] === "red pawn") {
+          setTile(ir, ic, "red queen");
+          queen++;
+        }
+      }
+    }
+  }
 };
 
 const checkWinner = () => {
